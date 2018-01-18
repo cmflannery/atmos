@@ -18,7 +18,7 @@ def calc_pressure(alt):
     # ============================================================================
     # CREATE DATAFRAME (1976 STD. ATMOSPHERE)
     # ============================================================================
-    path = os.path.join(os.getcwd(), 'atmosData.csv')
+    path = os.path.join(os.path.dirname(__file__), 'assets', 'atmosData.csv')
     df = read_table(path, delimiter=',', header=1,
                     dtype={'h(m)': np.float64, 'P(Pascal)': np.float64,
                            'T(K)': np.float64, 'dT(K/m)': np.float64})
