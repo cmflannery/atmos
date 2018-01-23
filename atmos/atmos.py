@@ -28,7 +28,7 @@ def ratios(alt):
     # ============================================================================
     # CREATE DATAFRAME (1976 STD. ATMOSPHERE)
     # ============================================================================
-    path = os.path.join(os.path.abspath(__file__), 'assets', 'atmosData.csv')
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'atmosData.csv')
     df = read_table(path, delimiter=',', header=1,
                     dtype={'h(m)': np.float64, 'P(Pascal)': np.float64,
                            'T(K)': np.float64, 'dT(K/m)': np.float64})
@@ -39,7 +39,6 @@ def ratios(alt):
     gtab = df['dT(K/m)']    # Temperature Lapse Rate (K/m)
     ttab = df['T(K)']       # Standard Temperature (K)
     ptab = df['P(Pascal)']  # Static Pressure (Pascals)
-
 
     # Binary Search through htab data
     i = 0
@@ -72,25 +71,25 @@ def ratios(alt):
 
     return (sigma, delta, theta)
 
-def pressure(alt, uni=False):
+def pressure(alt, uni=None):
     sea_level_pressure = units.Value(101325, 'Pa')
-    if uni == False and type(alt) != units.Value:
+    if uni == None and type(alt) != units.Value:
         raise TypeError('units is a required argument when argument is not units.Value types')
     
     [sigma, delta, theta] = ratios(alt.SIValue)
     return sea_level_pressure*delta
 
-def temperature(alt, uni=False):
+def temperature(alt, uni=None):
     sea_level_temperature = units.Value(298, 'K')
-    if uni == False and type(alt) != units.Value:
+    if uni == None and type(alt) != units.Value:
         raise TypeError('units is a required argument when argument is not units.Value types')
     
     [sigma, delta, theta] = ratios(alt.SIValue)
     return sea_level_temperature*theta
 
-def density(alt, uni=False):
+def density(alt, uni=None):
     sea_level_density = units.Value(1.29, ['kg','m^3'])
-    if uni == False and type(alt) != units.Value:
+    if uni == None and type(alt) != units.Value:
         raise TypeError('units is a required argument when argument is not units.Value types')
     
     [sigma, delta, theta] = ratios(alt.SIValue)
@@ -100,7 +99,6 @@ def test():
     print(pressure(units.Value(10000,'m')))
     print(temperature(units.Value(10000,'m')))
     print(density(units.Value(10000,'m')))
-
 
 if __name__ == '__main__':
     try:
