@@ -6,9 +6,16 @@ import subprocess
 from pandas import read_table
 import numpy as np
 
+__author__ = "Cameron Flannery"
+__copyright__ = "Copyright 2018"
+__license__ = "MIT"
+__version__ = "1.0.0"
+__status__ = "alpha"
+
 DEBUG = False
 
-def calc_pressure(alt):
+def ratios(alt):
+    """ expects altitude in meters """
     # ============================================================================
     # LOCAL CONSTANTS
     # ============================================================================
@@ -59,9 +66,9 @@ def calc_pressure(alt):
     return (sigma, delta, theta)
 
 
-def test_calc_pressure():
-    print(calc_pressure(629.70))
-    print(calc_pressure(30000))
+def test_ratios():
+    print(ratios(629.70))
+    print(ratios(30000))
 
 
 if __name__ == '__main__':
