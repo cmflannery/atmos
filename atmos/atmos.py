@@ -5,6 +5,7 @@ import os
 import subprocess
 from pandas import read_table
 import numpy as np
+import units
 
 __author__ = "Cameron Flannery"
 __copyright__ = "Copyright 2018"
@@ -12,10 +13,12 @@ __license__ = "MIT"
 __version__ = "1.0.0"
 __status__ = "alpha"
 
-DEBUG = False
+DEBUG = True
 
 def ratios(alt):
     """ expects altitude in meters """
+    if alt < 0:
+        raise ValueError('Altitude must be greater than 0')
     # ============================================================================
     # LOCAL CONSTANTS
     # ============================================================================
@@ -37,17 +40,21 @@ def ratios(alt):
     ttab = df['T(K)']       # Standard Temperature (K)
     ptab = df['P(Pascal)']  # Static Pressure (Pascals)
 
+
     # Binary Search through htab data
     i = 0
     j = NTAB
-    while True:
-        k = (i+j)//2  # integer division
-        if h < htab[k]:
-            j = k
-        else:
-            i = k
-        if j <= i+1:
-            break
+    try:
+        while True:
+            k = (i+j)//2  # integer division
+            if h < htab[k]:
+                j = k
+            else:
+                i = k
+            if j <= i+1:
+                break
+    except KeyError:
+        return (0.0, 0.0, 0.0)
 
     tgrad = gtab[i]                                   # i will be in 1...NTAB-1
     tbase = ttab[i]
@@ -65,10 +72,34 @@ def ratios(alt):
 
     return (sigma, delta, theta)
 
+def pressure(alt, uni=False):
+    sea_level_pressure = units.Value(101325, 'Pa')
+    if uni == False and type(alt) != units.Value:
+        raise TypeError('units is a required argument when argument is not units.Value types')
+    
+    [sigma, delta, theta] = ratios(alt.SIValue)
+    return sea_level_pressure*delta
 
-def test_ratios():
-    print(ratios(629.70))
-    print(ratios(30000))
+def temperature(alt, uni=False):
+    sea_level_temperature = units.Value(298, 'K')
+    if uni == False and type(alt) != units.Value:
+        raise TypeError('units is a required argument when argument is not units.Value types')
+    
+    [sigma, delta, theta] = ratios(alt.SIValue)
+    return sea_level_temperature*theta
+
+def density(alt, uni=False):
+    sea_level_density = units.Value(1.29, ['kg','m^3'])
+    if uni == False and type(alt) != units.Value:
+        raise TypeError('units is a required argument when argument is not units.Value types')
+    
+    [sigma, delta, theta] = ratios(alt.SIValue)
+    return sea_level_density*sigma
+
+def test():
+    print(pressure(units.Value(10000,'m')))
+    print(temperature(units.Value(10000,'m')))
+    print(density(units.Value(10000,'m')))
 
 
 if __name__ == '__main__':
@@ -77,4 +108,4 @@ if __name__ == '__main__':
     except OSError:
         subprocess.call('cls', shell=True)
     if DEBUG:
-        test_calc_pressure()
+        test()
