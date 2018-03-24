@@ -41,7 +41,6 @@ class SimpleAtmos(object):
     def sea_level_density(self, units_value):
         if type(units_value) != units.Value:
             raise TypeError('sea_level_density must be set with type units.Value')
-        
         self.__sea_level_density = units_value
     
     @property
@@ -91,7 +90,7 @@ class SimpleAtmos(object):
                 if j <= i+1:
                     break
         except KeyError:
-            return (0.0, 0.0, 0.0)
+            return (np.float32(0.0), np.float32(0.0), np.float32(0.0))
 
         tgrad = gtab[i]                                   # i will be in 1...NTAB-1
         tbase = ttab[i]
